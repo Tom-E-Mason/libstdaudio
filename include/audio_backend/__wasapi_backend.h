@@ -83,26 +83,19 @@ public:
 
 	static string convert_string(const wchar_t* wide_string)
 	{
-		int required_characters = WideCharToMultiByte(CP_UTF8, 0, wide_string, -1, nullptr, 0, nullptr, nullptr);
-		if (required_characters <= 0)
+		const int required_characters = WideCharToMultiByte(CP_UTF8, 0, wide_string, -1, nullptr, 0, nullptr, nullptr) - 1;
+		if (required_characters < 0)
 			return {};
 
 		string output;
 		output.resize(static_cast<size_t>(required_characters));
-		WideCharToMultiByte(CP_UTF8, 0, wide_string, -1, output.data(), static_cast<int>(output.size()), nullptr, nullptr);
+		WideCharToMultiByte(CP_UTF8, 0, wide_string, required_characters, output.data(), required_characters, nullptr, nullptr);
 		return output;
 	}
 
 	static string convert_string(const wstring& input)
 	{
-		int required_characters = WideCharToMultiByte(CP_UTF8, 0, input.c_str(), static_cast<int>(input.size()), nullptr, 0, nullptr, nullptr);
-		if (required_characters <= 0)
-			return {};
-
-		string output;
-		output.resize(static_cast<size_t>(required_characters));
-		WideCharToMultiByte(CP_UTF8, 0, input.c_str(), static_cast<int>(input.size()), output.data(), static_cast<int>(output.size()), nullptr, nullptr);
-		return output;
+		return convert_string(input.c_str());
 	}
 };
 
